@@ -12,11 +12,6 @@ from scipy.sparse import csr_matrix as csr
 from discretize.tests import check_derivative
 from discretize.utils import Zero, Identity, mkvc, speye, sdiag
 
-try:
-    import cupy as cp
-except ImportError:
-    cp = False
-
 from ..utils import (
     mat_utils,
     validate_type,
@@ -27,6 +22,7 @@ from ..utils import (
     validate_float,
 )
 from ..typing import RandomSeed
+from ..dask.utils import is_arraylike
 
 
 class IdentityMap:
@@ -240,7 +236,7 @@ class IdentityMap:
                 )
             return ComboMap([self, val])
 
-        elif hasattr(val, "__array_function__"):
+        elif is_arraylike(val):
         # elif isinstance(val, np.ndarray):
             if not self.shape[1] == "*" and not self.shape[1] == val.shape[0]:
                 raise ValueError(
