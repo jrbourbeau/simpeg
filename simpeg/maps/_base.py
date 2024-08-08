@@ -12,6 +12,11 @@ from scipy.sparse import csr_matrix as csr
 from discretize.tests import check_derivative
 from discretize.utils import Zero, Identity, mkvc, speye, sdiag
 
+try:
+    import cupy as cp
+except ImportError:
+    cp = False
+
 from ..utils import (
     mat_utils,
     validate_type,
@@ -235,7 +240,8 @@ class IdentityMap:
                 )
             return ComboMap([self, val])
 
-        elif isinstance(val, np.ndarray):
+        elif hasattr(val, "__array_function__"):
+        # elif isinstance(val, np.ndarray):
             if not self.shape[1] == "*" and not self.shape[1] == val.shape[0]:
                 raise ValueError(
                     "Dimension mismatch in {0!s} and np.ndarray{1!s}.".format(
