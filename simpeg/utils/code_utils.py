@@ -1028,7 +1028,8 @@ def validate_ndarray_with_shape(property_name, var, shape=None, dtype=float):
         dtypes = dtype
     for dtype in dtypes:
         try:
-            var = np.asarray(var, dtype=dtype, like=var)
+            like_kwarg = {"like": var} if hasattr(var, "ndim") else {}
+            var = np.asarray(var, dtype=dtype, **like_kwarg)
             bad_type = False
             break
         except (TypeError, ValueError) as err:
